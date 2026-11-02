@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:untitled/common/managers/session_manager.dart';
@@ -12,10 +14,23 @@ import 'package:untitled/screens/tabbar/tabbar_screen.dart';
 import 'package:untitled/screens/username_screen/username_screen.dart';
 
 class SplashController extends BaseController {
+  Timer? _fallbackTimer;
+  bool _hasNavigated = false;
+
   @override
   void onInit() {
+    // Do not leave users on the splash screen forever if the legacy API/backend
+    // is unavailable. A fresh install will continue to onboarding; a stored
+    // session will continue to the appropriate next screen.
+    _fallbackTimer = Timer(const Duration(seconds: 8), _continueWithoutSettings);
     fetchSettings();
     super.onInit();
+  }
+
+  void _continueWithoutSettings() {
+    if (_hasNavigated) return;
+    _hasNavigated = true;
+    Get.offAll(() => gotoView());
   }
 
   void fetchUser(Function() completion) {
@@ -35,7 +50,9 @@ class SplashController extends BaseController {
   void fetchSettings() {
     fetchUser(() {
       CommonService.shared.fetchGlobalSettings((p0) {
-        if (p0) {
+        if (p0 && !_hasNavigated) {
+          _fallbackTimer?.cancel();
+          _hasNavigated = true;
           Get.offAll(() => gotoView());
         }
       });

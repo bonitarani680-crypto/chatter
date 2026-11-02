@@ -4,6 +4,9 @@ const String appName = "Chatter";
 const String baseURL = "https://yourDomain.com/";
 const String itemBaseURL = "";
 const String apiURL = "${baseURL}api/";
+// ImgBB image hosting key. This is exposed in the mobile binary; use a proxy
+// or Firebase Cloud Function for production apps that need to keep it private.
+const String imgbbApiKey = "0b6b8ded38203dafeb70af3c6a53d7eb";
 const String termsURL = "${baseURL}termsOfUse";
 const String privacyURL = "${baseURL}privacyPolicy";
 const String helpURL = "http://www.yourHelpURL.com";
